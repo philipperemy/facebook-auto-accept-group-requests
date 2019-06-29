@@ -1,10 +1,11 @@
 from argparse import ArgumentParser
 from time import sleep
 
-from FacebookWebBot import *
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
 
 
 def get_script_arguments():

@@ -1,6 +1,8 @@
 from argparse import ArgumentParser
+from time import sleep
 
 from FacebookWebBot import *
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -9,20 +11,31 @@ def get_script_arguments():
     args = ArgumentParser()
     args.add_argument('--fb_user', required=True)
     args.add_argument('--fb_pass', required=True)
+    args.add_argument('--group_id', required=True)
     args.add_argument('--chromedriver')
     args.add_argument('--headless', action='store_true')
     return args.parse_args()
 
 
-def fetch_new_requests(client):
-    url = 'https://m.facebook.com/groups/1169550593165023?view=members&ref=group_browse'
+def fetch_new_requests(client, group_id):
+    url = 'https://m.facebook.com/groups/{}?view=members&ref=group_browse'.format(group_id)
     client.get(url)
-    a = 2
+    soup = BeautifulSoup(client.page_source, 'lxml')
     try:
-        # client.find_elements_by_tag_name('button')[0].click()
-        print('User accepted.')
+        links = [h3 for h3 in soup.find_all('h3') if str(h3.contents[0]) == 'Requests'][0].parent.find_all('a')
+        if len(links) == 0:
+            print('Nobody to accept.')
+            return
+        for link in links:
+            person_name = str(link.contents[0])
+            person_link = 'https://m.facebook.com/' + link.attrs['href']
+            print(person_name, person_link)
+            client.find_elements_by_tag_name('button')[0].click()
+            sleep(3)
+            print('User accepted.')
     except:
-        pass
+        print('Nobody to accept.')
+        return
 
 
 def login(client, email, password):
@@ -51,7 +64,7 @@ def logout(client):
         print('Disconnected.')
         return True
     except Exception:
-        print('Failed to log out')
+        print('Failed to log out.')
         return False
 
 
@@ -66,7 +79,7 @@ def main():
         driver = webdriver.Chrome(chrome_options=options)
     driver.implicitly_wait(10)
     if login(driver, args.fb_user, args.fb_pass):
-        fetch_new_requests(driver)
+        fetch_new_requests(driver, args.group_id)
         logout(driver)
     driver.quit()
 

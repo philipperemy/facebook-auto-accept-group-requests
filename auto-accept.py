@@ -17,7 +17,7 @@ def get_script_arguments():
     return args.parse_args()
 
 
-def fetch_new_requests(client, group_id):
+def accept_all_new_requests(client, group_id):
     url = 'https://m.facebook.com/groups/{}?view=members&ref=group_browse'.format(group_id)
     client.get(url)
     soup = BeautifulSoup(client.page_source, 'lxml')
@@ -78,7 +78,7 @@ def main():
         driver = webdriver.Chrome(chrome_options=options)
     driver.implicitly_wait(10)
     if login(driver, args.fb_user, args.fb_pass):
-        fetch_new_requests(driver, args.group_id)
+        accept_all_new_requests(driver, args.group_id)
         logout(driver)
     driver.quit()
 

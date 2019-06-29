@@ -39,8 +39,6 @@ def fetch_new_requests(client, group_id):
 
 
 def login(client, email, password):
-    '''Log to facebook using email (str) and password (str)'''
-
     url = 'https://mbasic.facebook.com'
     client.get(url)
     email_element = client.find_element_by_name('email')
@@ -58,7 +56,8 @@ def login(client, email, password):
 
 
 def logout(client):
-    url = 'https://mbasic.facebook.com/logout.php?h=AffSEUYT5RsM6bkY&t=1446949608&ref_component=mbasic_footer&ref_page=%2Fwap%2Fhome.php&refid=7'
+    url = 'https://mbasic.facebook.com/logout.php?h=AffSEUYT5RsM6bkY&t=1446949608' \
+          '&ref_component=mbasic_footer&ref_page=%2Fwap%2Fhome.php&refid=7'
     try:
         client.get(url)
         print('Disconnected.')

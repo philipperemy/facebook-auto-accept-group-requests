@@ -8,6 +8,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 
+logger = logging.getLogger(__name__)
+
 
 def get_script_arguments():
     args = ArgumentParser()
@@ -26,17 +28,17 @@ def accept_all_new_requests(client, group_id):
     try:
         links = [h3 for h3 in soup.find_all('h3') if str(h3.contents[0]) == 'Requests'][0].parent.find_all('a')
         if len(links) == 0:
-            print('Nobody to accept.')
+            logger.info('Nobody to accept.')
             return
         for link in links:
             person_name = str(link.contents[0])
             person_link = 'https://m.facebook.com/' + link.attrs['href']
-            print(person_name, person_link)
+            logger.info(person_name, person_link)
             client.find_elements_by_tag_name('button')[0].click()
             sleep(3)
-            print('User accepted.')
+            logger.info('User accepted.')
     except:
-        print('Nobody to accept.')
+        logger.info('Nobody to accept.')
         return
 
 
@@ -50,10 +52,11 @@ def login(client, email, password):
     pass_element.send_keys(Keys.ENTER)
     try:
         client.find_elements_by_class_name('bk')[0].click()
-        print('Logged in.')
+        logger.info('Logged in.')
         return True
     except NoSuchElementException:
-        print('Fail to login.')
+        logger.exception('')
+        logger.info('Fail to login.')
         return False
 
 
@@ -62,10 +65,11 @@ def logout(client):
           '&ref_component=mbasic_footer&ref_page=%2Fwap%2Fhome.php&refid=7'
     try:
         client.get(url)
-        print('Disconnected.')
+        logger.info('Disconnected.')
         return True
     except Exception:
-        print('Failed to log out.')
+        logger.exception('')
+        logger.info('Failed to log out.')
         return False
 
 
@@ -74,7 +78,7 @@ def init_logging():
     format_str = '%(asctime)s - %(levelname)s - %(message)s'
     formatter = logging.Formatter(format_str)
     log_filename = '/tmp/facebook.log'
-    print(f'Logging to [{log_filename}].')
+    logger.info(f'Logging to [{log_filename}].')
     logging.basicConfig(format=format_str,
                         filename=log_filename,
                         level=level)

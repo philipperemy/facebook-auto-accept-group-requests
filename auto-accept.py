@@ -1,3 +1,4 @@
+import logging
 from argparse import ArgumentParser
 from time import sleep
 
@@ -68,7 +69,22 @@ def logout(client):
         return False
 
 
+def init_logging():
+    level = logging.INFO
+    format_str = '%(asctime)s - %(levelname)s - %(message)s'
+    formatter = logging.Formatter(format_str)
+    log_filename = '/tmp/facebook.log'
+    print(f'Logging to [{log_filename}].')
+    logging.basicConfig(format=format_str,
+                        filename=log_filename,
+                        level=level)
+    console = logging.StreamHandler()
+    console.setFormatter(formatter)
+    logging.getLogger('').addHandler(console)
+
+
 def main():
+    init_logging()
     args = get_script_arguments()
     options = Options()
     if args.headless:
